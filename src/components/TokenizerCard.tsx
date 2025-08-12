@@ -14,6 +14,7 @@ import { Separator } from "./ui/separator";
 import { ThemeToggle } from "./ui/theme-toggle";
 import { encodingForModel, TiktokenModel } from "js-tiktoken";
 import { ModelSelector } from "./ModelSelector";
+import Footer from "./Footer";
 
 type TokenDisplayMode = "badges" | "numbered";
 
@@ -128,7 +129,7 @@ const TokenizerCard: React.FC = () => {
 
   return (
     <Card className="w-full rounded-none border-none">
-      <CardHeader className="text-center space-y-4">
+      <CardHeader className="text-center space-y-0">
         <div className="flex justify-end">
           <ThemeToggle />
         </div>
@@ -143,7 +144,7 @@ const TokenizerCard: React.FC = () => {
         </CardDescription>
       </CardHeader>
 
-      <CardContent className="space-y-6">
+      <CardContent className="space-y-3">
         {/* Model choose  */}
         <ModelSelector model={model} setModel={setModel} />
         {/* Input Section */}
@@ -228,6 +229,8 @@ const TokenizerCard: React.FC = () => {
           </div>
         </div>
       </CardContent>
+      {/* <Separator /> */}
+      <Footer />
     </Card>
   );
 };
