@@ -12,7 +12,7 @@ import { Textarea } from "./ui/textarea";
 import { Badge } from "./ui/badge";
 import { Separator } from "./ui/separator";
 import { ThemeToggle } from "./ui/theme-toggle";
-import { encodingForModel } from "js-tiktoken";
+import { encodingForModel, TiktokenModel } from "js-tiktoken";
 import { ModelSelector } from "./ModelSelector";
 
 type TokenDisplayMode = "badges" | "numbered";
@@ -33,25 +33,30 @@ const TokenizerCard: React.FC = () => {
   useEffect(() => {
     const handler = setTimeout(() => {
       setDebouncedText(text);
-    }, 400); // delay in ms
+    }, 400);
     return () => clearTimeout(handler);
   }, [text]);
 
   const tokens: TokenInfo[] = useMemo(() => {
     if (!debouncedText.trim()) return [];
     try {
-      const enc = encodingForModel("gpt-3.5-turbo");
-      const tokenIds = enc.encode(debouncedText);
-      const decodedTokens = tokenIds.map((id) => enc.decode([id]));
-      return tokenIds.map((id, idx) => ({
-        id,
-        text: decodedTokens[idx],
-      }));
+      if (model.startsWith("gpt")) {
+        const enc = encodingForModel(model as TiktokenModel);
+        const tokenIds = enc.encode(debouncedText);
+        const decodedTokens = tokenIds.map((id) => enc.decode([id]));
+        return tokenIds.map((id, idx) => ({ id, text: decodedTokens[idx] }));
+      } else {
+        // Placeholder for non-OpenAI models
+        return debouncedText.split(/\s+/).map((word, idx) => ({
+          id: idx,
+          text: word,
+        }));
+      }
     } catch (error) {
       console.error("Error tokenizing text:", error);
       return [];
     }
-  }, [debouncedText]);
+  }, [debouncedText, model]);
 
   const handleCopy = async () => {
     try {

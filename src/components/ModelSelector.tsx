@@ -1,4 +1,11 @@
 import React from "react";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "../components/ui/select";
 
 interface ModelOption {
   label: string;
@@ -24,17 +31,18 @@ export const ModelSelector: React.FC<ModelSelectorProps> = ({
 }) => {
   return (
     <div className="flex justify-end">
-      <select
-        value={model}
-        onChange={(e) => setModel(e.target.value)}
-        className="border-none rounded px-3 py-1 text-sm bg-background"
-      >
-        {availableModels.map((m) => (
-          <option key={m.value} value={m.value}>
-            {m.label}
-          </option>
-        ))}
-      </select>
+      <Select value={model} onValueChange={setModel}>
+        <SelectTrigger className="w-[180px] border-none ring-1 focus:outline-none rounded px-3 py-1 text-sm bg-background">
+          <SelectValue placeholder="Select a model" />
+        </SelectTrigger>
+        <SelectContent>
+          {availableModels.map((m) => (
+            <SelectItem key={m.value} value={m.value}>
+              {m.label}
+            </SelectItem>
+          ))}
+        </SelectContent>
+      </Select>
     </div>
   );
 };
