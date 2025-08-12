@@ -12,7 +12,7 @@ const Footer = () => {
           <span className="font-semibold text-pink-400">Wisdom</span>
           <span>and</span>
           <span className="font-semibold text-yellow-300">Guidance</span>
-          <span>from our amazing gurus ✨</span>
+          <span>from amazing gurus ✨</span>
         </p>
 
         {/* Social Icons */}

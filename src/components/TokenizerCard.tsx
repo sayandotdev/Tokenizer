@@ -87,14 +87,17 @@ const TokenizerCard: React.FC = () => {
   const handleCopy = async () => {
     try {
       let textToCopy = "";
+
       if (mode === "encode") {
+        // Only copy the token IDs
         textToCopy =
           displayMode === "numbered"
-            ? tokens.map((t, i) => `${i + 1}. ${t.text} -> ${t.id}`).join("\n")
-            : tokens.map((t) => `${t.text} -> ${t.id}`).join("\n");
+            ? tokens.map((t) => `${t.id}`).join("\n")
+            : tokens.map((t) => `${t.id}`).join("\n");
       } else {
         textToCopy = decodedText;
       }
+
       await navigator.clipboard.writeText(textToCopy);
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
