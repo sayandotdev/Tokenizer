@@ -17,6 +17,7 @@ import { ModelSelector } from "./ModelSelector";
 import Footer from "./Footer";
 
 type TokenDisplayMode = "badges" | "numbered";
+type ModeType = "encode" | "decode";
 
 interface TokenInfo {
   text: string;
@@ -30,6 +31,8 @@ const TokenizerCard: React.FC = () => {
   const [showTokenIndices, setShowTokenIndices] = useState(false);
   const [copied, setCopied] = useState(false);
   const [model, setModel] = useState("gpt-3.5-turbo");
+  const [mode, setMode] = useState<ModeType>("encode");
+  const [decodedText, setDecodedText] = useState("");
 
   useEffect(() => {
     const handler = setTimeout(() => {
@@ -39,7 +42,7 @@ const TokenizerCard: React.FC = () => {
   }, [text]);
 
   const tokens: TokenInfo[] = useMemo(() => {
-    if (!debouncedText.trim()) return [];
+    if (!debouncedText.trim() || mode !== "encode") return [];
     try {
       if (model.startsWith("gpt")) {
         const enc = encodingForModel(model as TiktokenModel);
@@ -47,7 +50,6 @@ const TokenizerCard: React.FC = () => {
         const decodedTokens = tokenIds.map((id) => enc.decode([id]));
         return tokenIds.map((id, idx) => ({ id, text: decodedTokens[idx] }));
       } else {
-        // Placeholder for non-OpenAI models
         return debouncedText.split(/\s+/).map((word, idx) => ({
           id: idx,
           text: word,
@@ -57,28 +59,67 @@ const TokenizerCard: React.FC = () => {
       console.error("Error tokenizing text:", error);
       return [];
     }
-  }, [debouncedText, model]);
+  }, [debouncedText, model, mode]);
+
+  // Decode functionality
+  useEffect(() => {
+    if (mode === "decode" && debouncedText.trim()) {
+      try {
+        const tokenIds = debouncedText
+          .split(/[\s,]+/)
+          .map((t) => parseInt(t, 10))
+          .filter((n) => !isNaN(n));
+        if (tokenIds.length > 0 && model.startsWith("gpt")) {
+          const enc = encodingForModel(model as TiktokenModel);
+          setDecodedText(enc.decode(tokenIds));
+        } else {
+          setDecodedText("");
+        }
+      } catch (error) {
+        console.error("Error decoding tokens:", error);
+        setDecodedText("");
+      }
+    } else {
+      setDecodedText("");
+    }
+  }, [debouncedText, mode, model]);
 
   const handleCopy = async () => {
     try {
-      const textToCopy =
-        displayMode === "numbered"
-          ? tokens.map((t, i) => `${i + 1}. ${t.text} -> ${t.id}`).join("\n")
-          : tokens.map((t) => `${t.text} -> ${t.id}`).join("\n");
-
+      let textToCopy = "";
+      if (mode === "encode") {
+        textToCopy =
+          displayMode === "numbered"
+            ? tokens.map((t, i) => `${i + 1}. ${t.text} -> ${t.id}`).join("\n")
+            : tokens.map((t) => `${t.text} -> ${t.id}`).join("\n");
+      } else {
+        textToCopy = decodedText;
+      }
       await navigator.clipboard.writeText(textToCopy);
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
     } catch (err) {
-      console.error("Failed to copy tokens:", err);
+      console.error("Failed to copy:", err);
     }
   };
 
   const renderTokens = () => {
-    if (tokens.length === 0) {
+    if (tokens.length === 0 && mode === "encode") {
       return (
         <p className="text-muted-foreground text-center py-8">
           No tokens to display. Enter some text above.
+        </p>
+      );
+    }
+
+    if (mode === "decode") {
+      return decodedText ? (
+        <div className="p-3 rounded-lg font-mono whitespace-pre-wrap">
+          {decodedText}
+        </div>
+      ) : (
+        <p className="text-muted-foreground text-center py-8">
+          No decoded text. Enter valid token IDs above.
         </p>
       );
     }
@@ -140,96 +181,137 @@ const TokenizerCard: React.FC = () => {
           </CardTitle>
         </div>
         <CardDescription className="text-lg text-gray-600">
-          Tokenize your text using Different models
+          Encode and Decode tokens using different models
         </CardDescription>
       </CardHeader>
 
-      <CardContent className="space-y-3">
+      <CardContent className="space-y-3 pb-32 sm:pb-20">
+        {/* Mode Switch */}
+        <div className="flex justify-center space-x-2">
+          <Button
+            variant={mode === "encode" ? "default" : "outline"}
+            size="sm"
+            onClick={() => setMode("encode")}
+          >
+            Encode
+          </Button>
+          <Button
+            variant={mode === "decode" ? "default" : "outline"}
+            size="sm"
+            onClick={() => setMode("decode")}
+          >
+            Decode
+          </Button>
+        </div>
+
         {/* Model choose  */}
         <ModelSelector model={model} setModel={setModel} />
+
         {/* Input Section */}
         <div className="space-y-4">
           <Textarea
             value={text}
             onChange={(e) => setText(e.target.value)}
-            placeholder="Enter your text here..."
+            placeholder={
+              mode === "encode"
+                ? "Enter your text here..."
+                : "Enter token IDs separated by spaces or commas..."
+            }
             className="min-h-[120px] resize-none focus:ring-2 focus:ring-gray-600 focus:outline-none focus:border-none transition-colors duration-200"
           />
         </div>
 
-        <Separator />
+        {mode === "encode" && <Separator />}
 
         {/* Stats Section */}
-        <div className="grid grid-cols-2 gap-4">
-          <div className="text-center p-4 bg-blue-50 dark:bg-blue-950/50 rounded-lg w-full">
-            <div className="text-2xl font-bold text-blue-600 dark:text-blue-400">
-              {tokens.length}
+        {mode === "encode" && (
+          <div className="grid grid-cols-2 gap-4">
+            <div className="text-center p-4 bg-blue-50 dark:bg-blue-950/50 rounded-lg w-full">
+              <div className="text-2xl font-bold text-blue-600 dark:text-blue-400">
+                {tokens.length}
+              </div>
+              <div className="text-sm text-muted-foreground">Total Tokens</div>
             </div>
-            <div className="text-sm text-muted-foreground">Total Tokens</div>
-          </div>
-          <div className="text-center p-4 bg-purple-50 dark:bg-purple-950/50 rounded-lg">
-            <div className="text-2xl font-bold text-purple-600 dark:text-purple-400">
-              {new Set(tokens.map((t) => t.id)).size}
+            <div className="text-center p-4 bg-purple-50 dark:bg-purple-950/50 rounded-lg">
+              <div className="text-2xl font-bold text-purple-600 dark:text-purple-400">
+                {new Set(tokens.map((t) => t.id)).size}
+              </div>
+              <div className="text-sm text-muted-foreground">Unique Tokens</div>
             </div>
-            <div className="text-sm text-muted-foreground">Unique Tokens</div>
           </div>
-        </div>
+        )}
 
-        <Separator />
+        {mode === "encode" && <Separator />}
 
         {/* Output Section */}
         <div className="space-y-4">
-          <div className="flex flex-wrap gap-2 justify-between">
-            <div className="flex items-center space-x-1">
-              <Button
-                variant={displayMode === "badges" ? "default" : "outline"}
-                size="sm"
-                onClick={() => setDisplayMode("badges")}
-              >
-                Badges
-              </Button>
-              <Button
-                variant={displayMode === "numbered" ? "default" : "outline"}
-                size="sm"
-                onClick={() => setDisplayMode("numbered")}
-              >
-                Numbered
-              </Button>
+          {mode === "encode" && (
+            <div className="flex flex-wrap gap-2 justify-between">
+              <div className="flex items-center space-x-1">
+                <Button
+                  variant={displayMode === "badges" ? "default" : "outline"}
+                  size="sm"
+                  onClick={() => setDisplayMode("badges")}
+                >
+                  Badges
+                </Button>
+                <Button
+                  variant={displayMode === "numbered" ? "default" : "outline"}
+                  size="sm"
+                  onClick={() => setDisplayMode("numbered")}
+                >
+                  Numbered
+                </Button>
+              </div>
+              <div className="flex items-center space-x-2">
+                <Button
+                  onClick={() => setShowTokenIndices(!showTokenIndices)}
+                  variant="outline"
+                  size="sm"
+                  className="flex items-center space-x-2"
+                  disabled={displayMode === "numbered"}
+                >
+                  {showTokenIndices ? (
+                    <EyeOff className="w-4 h-4" />
+                  ) : (
+                    <Eye className="w-4 h-4" />
+                  )}
+                  <span>{showTokenIndices ? "Hide" : "Show"} Indices</span>
+                </Button>
+                <Button
+                  onClick={handleCopy}
+                  variant="outline"
+                  size="sm"
+                  className="flex items-center space-x-2 transition-all duration-200"
+                  disabled={tokens.length === 0}
+                >
+                  <Copy className="w-4 h-4" />
+                  <span>{copied ? "Copied!" : "Copy"}</span>
+                </Button>
+              </div>
             </div>
-            <div className="flex items-center space-x-2">
-              <Button
-                onClick={() => setShowTokenIndices(!showTokenIndices)}
-                variant="outline"
-                size="sm"
-                className="flex items-center space-x-2"
-                disabled={displayMode === "numbered"}
-              >
-                {showTokenIndices ? (
-                  <EyeOff className="w-4 h-4" />
-                ) : (
-                  <Eye className="w-4 h-4" />
-                )}
-                <span>{showTokenIndices ? "Hide" : "Show"} Indices</span>
-              </Button>
+          )}
+
+          {mode === "decode" && (
+            <div className="flex justify-end">
               <Button
                 onClick={handleCopy}
                 variant="outline"
                 size="sm"
                 className="flex items-center space-x-2 transition-all duration-200"
-                disabled={tokens.length === 0}
+                disabled={!decodedText}
               >
                 <Copy className="w-4 h-4" />
                 <span>{copied ? "Copied!" : "Copy"}</span>
               </Button>
             </div>
-          </div>
+          )}
 
           <div className="max-h-64 overflow-y-auto p-4 bg-muted/50 rounded-lg border">
             {renderTokens()}
           </div>
         </div>
       </CardContent>
-      {/* <Separator /> */}
       <Footer />
     </Card>
   );

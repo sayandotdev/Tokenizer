@@ -2,13 +2,13 @@ import { Github, Twitter, Linkedin } from "lucide-react";
 
 const Footer = () => {
   return (
-    <footer className="sm:sticky bottom-0 w-full bg-[#020817]">
+    <footer className="fixed bottom-0 w-full bg-[#020817]">
       <hr />
       <div className="max-w-7xl mx-auto px-4 py-4 flex flex-col md:flex-row items-center justify-between">
         {/* Navigation Links */}
         <p className="flex flex-wrap items-center justify-center gap-1 text-center text-sm sm:text-base text-gray-400 mb-4 md:mb-0">
           <span className="font-semibold text-white">☕ Chai Tokenizer</span>
-          <span>— Crafted with</span>
+          <span>— Crafted with </span>
           <span className="font-semibold text-pink-400">Wisdom</span>
           <span>and</span>
           <span className="font-semibold text-yellow-300">Guidance</span>
