@@ -1,5 +1,5 @@
 import React, { useState, useMemo, useEffect } from "react";
-import { Coffee, Copy, Eye, EyeOff } from "lucide-react";
+import { Braces, Copy, Eye, EyeOff } from "lucide-react";
 import {
   Card,
   CardContent,
@@ -178,9 +178,9 @@ const TokenizerCard: React.FC = () => {
           <ThemeToggle />
         </div>
         <div className="flex items-center justify-center space-x-2">
-          <Coffee className="size-10 text-primary" />
+          <Braces className="size-10 text-primary" />
           <CardTitle className="text-3xl font-bold bg-gradient-to-r from-primary to-purple-600 bg-clip-text text-transparent">
-            Chai Tokenizer
+            Tokenizer
           </CardTitle>
         </div>
         <CardDescription className="text-lg text-gray-600">

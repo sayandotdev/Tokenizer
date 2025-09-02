@@ -1,8 +1,9 @@
-# Chai Tokenizer ☕
+# Tokenizer
 
-Chai Tokenizer is a sleek web tool built with **React**, **TypeScript**, and **Tailwind CSS** for encoding and decoding text tokens using OpenAI's `tiktoken` library. It supports **multiple models** (like `gpt-3.5-turbo`, `gpt-4`) and allows you to **encode text → tokens** or **decode tokens → text**.
+Tokenizer is a sleek web tool built with **React**, **TypeScript**, and **Tailwind CSS** for encoding and decoding text tokens using OpenAI's `tiktoken` library. It supports **multiple models** (like `gpt-3.5-turbo`, `gpt-4`) and allows you to **encode text → tokens** or **decode tokens → text**.
 
 ## 🚀 Features
+
 - **Encode Mode**: Convert plain text into tokens (IDs) for the selected model.
 - **Decode Mode**: Convert token IDs back into text.
 - **Multiple Model Support**: Switch between OpenAI models easily.
@@ -12,14 +13,16 @@ Chai Tokenizer is a sleek web tool built with **React**, **TypeScript**, and **T
 - **Dark/Light Theme Toggle**.
 
 ## 📸 Screenshots
+
 > Add your screenshots here  
 > Example:  
 > **Encode Mode**  
 > ![Encode Mode Screenshot](./public/encode.png)  
 > **Decode Mode**  
-> ![Decode Mode Screenshot](./public/decode.png)  
+> ![Decode Mode Screenshot](./public/decode.png)
 
 ## 🛠️ Tech Stack
+
 - **React** (with TypeScript)
 - **Tailwind CSS** + Shadcn UI components
 - **Lucide React Icons**
@@ -27,18 +30,24 @@ Chai Tokenizer is a sleek web tool built with **React**, **TypeScript**, and **T
 - **Vite** (or Next.js if adapted)
 
 ## 📦 Installation
+
 Clone the repository:
+
 ```bash
 git clone https://github.com/sayandotdev/Tokenizer.git
-cd chai-tokenizer
+cd -tokenizer
 ```
+
 Install dependencies:
+
 ```bash
 npm install
 # or
 yarn install
 ```
+
 Run locally:
+
 ```bash
 npm run dev
 # or
@@ -46,8 +55,9 @@ yarn dev
 ```
 
 ## 📋 Usage
+
 1. **Select Mode**:
-   - **Encode**: Type your text in the textarea.  
+   - **Encode**: Type your text in the textarea.
    - **Decode**: Enter token IDs separated by spaces or commas.
 2. **Choose Model** from the model selector dropdown.
 3. **View Output**:
@@ -56,21 +66,26 @@ yarn dev
 4. **Copy Results**: Click the **Copy** button to copy to clipboard.
 
 ### Example (Encode Mode)
+
 Text: `"Hello world"`
 Output:
+
 ```
 Hello → 9906
 world → 1917
 ```
 
 ### Example (Decode Mode)
+
 Tokens: `9906 1917`
 Output:
+
 ```
 Hello world
 ```
 
 ## 📂 Project Structure
+
 ```
 src/
   ├── components/
@@ -83,7 +98,9 @@ src/
 ```
 
 ## ⚙️ Configuration
+
 If using non-OpenAI models, adjust tokenization logic in:
+
 ```ts
 if (model.startsWith("gpt")) {
   const enc = encodingForModel(model as TiktokenModel);
@@ -93,8 +110,9 @@ if (model.startsWith("gpt")) {
 }
 ```
 
-
 ## 📧 Contact
+
 If you have questions, feel free to reach out:
+
 - GitHub: [@/sayandotdev](https://github.com/sayandotdev)
 - Website: [https://sayanrakshit.vercel.app](https://sayanrakshit.vercel.app)
