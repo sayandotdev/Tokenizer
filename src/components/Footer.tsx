@@ -32,7 +32,7 @@ const Footer = () => {
             <Github size={20} />
           </a>
           <a
-            href="https://linkedin.com/sayandotdev"
+            href="https://www.linkedin.com/posts/activity-7368531127407435777-PfjS"
             target="_blank"
             rel="noopener noreferrer"
             className="hover:text-white transition-colors"
